@@ -1,0 +1,32 @@
+//@version=5
+indicator("SMT Sweep Reverse Study", overlay=false)
+
+prevHigh = high[1]
+prevLow = low[1]
+prevATR = high[1] - low[1]
+
+sweptLow = low < prevLow
+sweptHigh = high > prevHigh
+
+reversedFromLow = sweptLow and close > prevLow
+reversedFromHigh = sweptHigh and close < prevHigh
+
+sweepDistanceLow = reversedFromLow ? prevLow - low : na
+sweepDistanceHigh = reversedFromHigh ? high - prevHigh : na
+
+multiplierLow = reversedFromLow ? sweepDistanceLow / prevATR : na
+multiplierHigh = reversedFromHigh ? sweepDistanceHigh / prevATR : na
+
+plot(multiplierLow, "Low Sweep", color=color.red, style=plot.style_circles, linewidth=2)
+plot(multiplierHigh, "High Sweep", color=color.green, style=plot.style_circles, linewidth=2)
+
+hline(0.15, "0.15x", color=color.gray, linestyle=hline.style_dashed)
+hline(0.20, "0.20x", color=color.gray, linestyle=hline.style_dashed)
+hline(0.25, "0.25x", color=color.gray, linestyle=hline.style_dashed)
+hline(0.30, "0.30x", color=color.gray, linestyle=hline.style_dashed)
+
+if reversedFromLow
+    label.new(bar_index, multiplierLow, str.tostring(math.round(prevATR, 2)) + " / " + str.tostring(math.round(multiplierLow, 3)), style=label.style_label_up, color=color.red, textcolor=color.white, size=size.tiny)
+
+if reversedFromHigh
+    label.new(bar_index, multiplierHigh, str.tostring(math.round(prevATR, 2)) + " / " + str.tostring(math.round(multiplierHigh, 3)), style=label.style_label_up, color=color.green, textcolor=color.white, size=size.tiny)

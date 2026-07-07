@@ -27,3 +27,34 @@ VALUES
     ROUND(AVG(profit_loss), 2) AS avg_pnl_per_trade
 FROM historical_trades
 GROUP BY ticker;
+
+-- Counting the winning vs losing trades
+
+SELECT 
+    ticker,
+    COUNT(*) AS total_trades,
+    SUM(CASE WHEN profit_loss > 0 THEN 1 ELSE 0 END) AS wins,
+    SUM(CASE WHEN profit_loss < 0 THEN 1 ELSE 0 END) AS losses,
+    SUM(profit_loss) AS total_net_pnl
+FROM historical_trades
+GROUP BY ticker;
+
+-- Comparing my performance on Longs vs Shorts
+
+SELECT 
+    direction,
+    COUNT(*) AS trade_count,
+    AVG(profit_loss) AS average_pnl,
+    MAX(profit_loss) AS best_trade,
+    MIN(profit_loss) AS worst_trade
+FROM historical_trades
+GROUP BY direction;
+
+-- Checking the average risk exposure (Runup vs Drawdown)
+
+SELECT 
+    ticker,
+    AVG(runup_percent) AS avg_growth_during_trade,
+    AVG(drawdown_percent) AS avg_risk_dropped_minus
+FROM historical_trades
+GROUP BY ticker;
